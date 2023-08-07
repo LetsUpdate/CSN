@@ -4,7 +4,7 @@ Egy js script a Neptun oktatási platform Captcha kihívásainak automatikus meg
 
 Telepítés lépései:
 1. Telepítsd a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt a böngésződbe.
-2. [Katt ide](https://github.com/LetsUpdate/CSN) script a telepítéséhez
+2. [Katt ide](https://github.com/LetsUpdate/CSN/releases/download/release/CSN.user.js) script a telepítéséhez
 
 
 Projekt leírás:
