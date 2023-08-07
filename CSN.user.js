@@ -22,7 +22,7 @@ SOFTWARE.*/
 
 // ==UserScript==
 // @name         Chaptca Solver for Neptun
-// @namespace    http://example.net/
+// @namespace    https://github.com/LetsUpdate/CSN
 // @version      0.1
 // @description  No chapcha 4 u
 // @author       RED
