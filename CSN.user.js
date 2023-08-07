@@ -24,7 +24,7 @@ SOFTWARE.*/
 // @name         Captcha Solver for Neptun
 // @namespace    https://github.com/LetsUpdate/CSN
 // @version      0.1.1
-// @description  No chapcha 4 u
+// @description  No Captcha 4 u
 // @author       RED
 // @license      MIT
 
@@ -46,34 +46,12 @@ SOFTWARE.*/
 (function () {
     'use strict';
 
-    function getAudioSlice(audioBuffer, startTime, endTime) {
-        const sampleRate = audioBuffer.sampleRate;
-        const startFrame = Math.floor(startTime * sampleRate);
-        const endFrame = Math.min(Math.ceil(endTime * sampleRate), audioBuffer.length);
-
-        const frameCount = endFrame - startFrame;
-        const audioSlice = new Float32Array(frameCount);
-
-        for (let i = 0; i < frameCount; i++) {
-            audioSlice[i] = audioBuffer.getChannelData(0)[startFrame + i];
-        }
-
-        return audioSlice;
-    }
-
-    function mapAudioRangeToByte(audioBuffer) {
+    //Kezelehtővé teszi a hangot
+    function NormalizeAudio(audioBuffer) {
         const channelData = audioBuffer.getChannelData(0);
         const bufferLength = channelData.length;
-        let minAmplitude = 0
-        let maxAmplitude = 0.5
-        let count =0;
-        let x = channelData.length;
-        while(Math.abs( channelData[--x])==0){
-        count++
-        }
-        console.log("Count: "+count);
-
-      
+        const minAmplitude = 0
+        const maxAmplitude = 0.5
       
         // Map the audio data to the range 0 to 255 (byte range)
         const amplitudeRange = maxAmplitude - minAmplitude;
@@ -85,21 +63,12 @@ SOFTWARE.*/
         return normalizedAudio;
       }
 
-    function sumFloat32Array(arr) {
-        let sum = 0.0;
-        for (let i = 0; i < arr.length; i++) {
-            if (arr[i] > 0) {
-                sum += arr[i] * 500;
-            }
-        }
-        return sum;
-    }
-
+    //Ha valamiért nem lenne pontos az olvasás
     function getClosest(count) {
-        //                  0                   1                   2               3                   4                   5                    6                  7               8                       9
-        const oldnumbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
+        //                           0                   1                   2               3                   4                   5                    6                  7               8                       9
+        //const oldnumbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
         const numbers = [260587,137703,144640,74290,107363,99141,35806,64888,268335,123680];
-        ////6-35806, 4-107363,, 3-74290,1-137703,6-35806,9-123680,2-144640,0-260587, 8-268335, 5-99141, 7-64888
+        
         let closestIndex = 0;
         let closest = Math.abs(numbers[0] - count);
 
@@ -113,11 +82,11 @@ SOFTWARE.*/
         }
         return closestIndex
     }
-
-    function getAudioProcess(audioBuffer) {
     
-        
-        const normalizedAudio = mapAudioRangeToByte(audioBuffer)
+    // "Lenyomatokat" csinál a hangokból és tömb kénmt vissza adja azokat
+    function AudioProcessor(audioBuffer) {
+
+        const normalizedAudio = NormalizeAudio(audioBuffer)
 
         const bufferLength = normalizedAudio.length
 
@@ -158,7 +127,7 @@ SOFTWARE.*/
 
 
     // Az audió feldolgozása és tömbbe mentése
-    async function processAudio(audioLink) {
+    async function _SolveChapcha(audioLink) {
         await fetch(audioLink)
             .then(response => response.arrayBuffer())
             .then(buffer => {
@@ -166,31 +135,10 @@ SOFTWARE.*/
                 return audioContext.decodeAudioData(buffer);
             })
             .then(decodedData => {
-                const audioDuration = decodedData.duration;
-                const segmentDuration = audioDuration / 6; // Hat egyenlő részre osztjuk az audiót
 
-                const audioSegments = [];
-                for (let i = 0; i < 6; i++) {
-                    const startTime = i * segmentDuration;
-                    const endTime = startTime + segmentDuration - segmentDuration / 10;
-
-                    // A kívánt időintervallumra vonatkozóan lekérjük az audió adatokat
-                    const audioSlice = getAudioSlice(decodedData, startTime, endTime);
-                    audioSegments.push(audioSlice);
-                }
-                console.log("TEST-start")
-                console.log(getAudioProcess(decodedData))
-                console.log("TEST-end")
-
-
-                // Itt használhatod a "audioSegments" tömböt a szükséges további műveletekkel
-                //console.log("Audio részek: ", audioSegments);
-                //const jsonArray = JSON.stringify(Array.from(audioSegments));
-
-                //console.log(jsonArray);
                 const ChaptchaInput = document.getElementById('cap');
                 var solution = "";
-                getAudioProcess(decodedData).forEach(element => {
+                AudioProcessor(decodedData).forEach(element => {
                     console.log(element);
                     solution += getClosest(element);
                 });
@@ -204,31 +152,25 @@ SOFTWARE.*/
 
     async function SolveChapcha() {
         const audioLink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
-        await processAudio(audioLink);
+        await _SolveChapcha(audioLink);
     }
 
 
-    //Ha valami változás történik az oldalon
-    function onAlertChange() {
-        console.log("Change ")
-        //SolveChapcha();
+    //Ha frissül a Captcha kép...
+    function onChapPicChanged() {
         setTimeout(SolveChapcha,300);
     }
 
-    // Hívjuk meg a függvényt, amikor az oldal betöltődött
+    //OnLoad...
     window.addEventListener('load', async () => {
-
-        //Megoldja ha
         SolveChapcha()
 
-        //Ez a rész azért felel hogy ha hibázna vagy lejárna a hapcha akkor javítsa
-        //return;// kikaocsolva
         let observer;
         if (observer) {
             observer.disconnect()
         }
         const config = { attributes: true, childList: false, subtree: false };
-        observer = new MutationObserver(onAlertChange);
+        observer = new MutationObserver(onChapPicChanged);
         observer.observe(document.getElementsByClassName("captchaImage")[0], config);
 
     }, false);
