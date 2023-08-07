@@ -64,19 +64,16 @@ SOFTWARE.*/
     function mapAudioRangeToByte(audioBuffer) {
         const channelData = audioBuffer.getChannelData(0);
         const bufferLength = channelData.length;
-        let minAmplitude = Number.POSITIVE_INFINITY;
-        let maxAmplitude = Number.NEGATIVE_INFINITY;
-      
-        // Find the minimum and maximum amplitudes in the audio data
-        for (let i = 0; i < bufferLength; i++) {
-          const amplitude = Math.abs(channelData[i]);
-          if (amplitude < minAmplitude) {
-            minAmplitude = amplitude;
-          }
-          if (amplitude > maxAmplitude) {
-            maxAmplitude = amplitude;
-          }
+        let minAmplitude = 0
+        let maxAmplitude = 0.5
+        let count =0;
+        let x = channelData.length;
+        while(Math.abs( channelData[--x])==0){
+        count++
         }
+        console.log("Count: "+count);
+
+      
       
         // Map the audio data to the range 0 to 255 (byte range)
         const amplitudeRange = maxAmplitude - minAmplitude;
@@ -100,7 +97,9 @@ SOFTWARE.*/
 
     function getClosest(count) {
         //                  0                   1                   2               3                   4                   5                    6                  7               8                       9
-        const numbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
+        const oldnumbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
+        const numbers = [260587,137703,144640,74290,107363,99141,35806,64888,268335,123680];
+        ////6-35806, 4-107363,, 3-74290,1-137703,6-35806,9-123680,2-144640,0-260587, 8-268335, 5-99141, 7-64888
         let closestIndex = 0;
         let closest = Math.abs(numbers[0] - count);
 
@@ -191,12 +190,11 @@ SOFTWARE.*/
                 //console.log(jsonArray);
                 const ChaptchaInput = document.getElementById('cap');
                 var solution = "";
-                for (let i = 0; i < audioSegments.length; i++) {
-                    const sum = sumFloat32Array(audioSegments[i])
-                    console.log(sum);
-                    solution += getClosest(sum);
-                    ChaptchaInput.value = solution;
-                }
+                getAudioProcess(decodedData).forEach(element => {
+                    console.log(element);
+                    solution += getClosest(element);
+                });
+                ChaptchaInput.value = solution;
 
             })
             .catch(error => {
@@ -212,26 +210,9 @@ SOFTWARE.*/
 
     //Ha valami változás történik az oldalon
     function onAlertChange() {
-
-        const popup = document.getElementById("validlogin_popupTable")
-        if (!popup) { return; }
-
-        const messageBox = popup.getElementsByClassName("ajax__validatorcallout_error_message_cell")[0];
-        if (messageBox && messageBox.innerText === "Nem vagy hibásan töltötte ki a captcha-t") {
-            //console.log("Lefut!")
-            document.getElementsByClassName("captchaRefreshIcon")[0].click();
-            setTimeout(
-                async () => {
-                    try {
-                        await SolveChapcha();
-                        messageBox.innerText = "Javítva! (CSN script)";
-                    }
-                    catch (e) {
-                        messageBox.innerText = "Valami nem jó, próbád manuálisan! (CSN script)";
-                    }
-
-                }, 100);
-        }
+        console.log("Change ")
+        //SolveChapcha();
+        setTimeout(SolveChapcha,300);
     }
 
     // Hívjuk meg a függvényt, amikor az oldal betöltődött
@@ -241,14 +222,14 @@ SOFTWARE.*/
         SolveChapcha()
 
         //Ez a rész azért felel hogy ha hibázna vagy lejárna a hapcha akkor javítsa
-        return;// kikaocsolva
+        //return;// kikaocsolva
         let observer;
         if (observer) {
             observer.disconnect()
         }
-        const config = { attributes: false, childList: true, subtree: true };
+        const config = { attributes: true, childList: false, subtree: false };
         observer = new MutationObserver(onAlertChange);
-        observer.observe(document.getElementById("captchaRow"), config);
+        observer.observe(document.getElementsByClassName("captchaImage")[0], config);
 
     }, false);
 })();
