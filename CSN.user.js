@@ -23,7 +23,7 @@ SOFTWARE.*/
 // ==UserScript==
 // @name         Captcha Solver for Neptun
 // @namespace    https://github.com/LetsUpdate/CSN
-// @version      0.1
+// @version      0.1.1
 // @description  No chapcha 4 u
 // @author       RED
 // @license      MIT
@@ -43,7 +43,7 @@ SOFTWARE.*/
 
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     function getAudioSlice(audioBuffer, startTime, endTime) {
@@ -61,81 +61,194 @@ SOFTWARE.*/
         return audioSlice;
     }
 
+    function mapAudioRangeToByte(audioBuffer) {
+        const channelData = audioBuffer.getChannelData(0);
+        const bufferLength = channelData.length;
+        let minAmplitude = Number.POSITIVE_INFINITY;
+        let maxAmplitude = Number.NEGATIVE_INFINITY;
+      
+        // Find the minimum and maximum amplitudes in the audio data
+        for (let i = 0; i < bufferLength; i++) {
+          const amplitude = Math.abs(channelData[i]);
+          if (amplitude < minAmplitude) {
+            minAmplitude = amplitude;
+          }
+          if (amplitude > maxAmplitude) {
+            maxAmplitude = amplitude;
+          }
+        }
+      
+        // Map the audio data to the range 0 to 255 (byte range)
+        const amplitudeRange = maxAmplitude - minAmplitude;
+        let normalizedAudio=[];
+        for (let i = 0; i < bufferLength; i++) {
+          const scaledAmplitude = (Math.abs(channelData[i]) - minAmplitude) / amplitudeRange;
+          normalizedAudio.push(Math.round(scaledAmplitude * 255));
+        }
+        return normalizedAudio;
+      }
+
     function sumFloat32Array(arr) {
         let sum = 0.0;
         for (let i = 0; i < arr.length; i++) {
-            if(arr[i]>0){
-                sum += arr[i]*500;
+            if (arr[i] > 0) {
+                sum += arr[i] * 500;
             }
         }
         return sum;
     }
 
-    function getClosest(count){
+    function getClosest(count) {
         //                  0                   1                   2               3                   4                   5                    6                  7               8                       9
-        const numbers = [295908.338132016,144808.64692975077,146017.76512430015,200643.33916450525,173056.1334383033,116006.99633115364,102563.54561544387,132958.96139509347,277033.17429445166,209655.16578076393]
-        let closestIndex =0;
-        let closest=Math.abs(numbers[0]-count);
+        const numbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
+        let closestIndex = 0;
+        let closest = Math.abs(numbers[0] - count);
 
         for (let index = 0; index < numbers.length; index++) {
             const current = numbers[index];
-            const closeness =Math.abs(current-count);
-            if(closeness<closest){
+            const closeness = Math.abs(current - count);
+            if (closeness < closest) {
                 closest = closeness;
-                closestIndex=index;
+                closestIndex = index;
             }
         }
         return closestIndex
     }
 
+    function getAudioProcess(audioBuffer) {
+    
+        
+        const normalizedAudio = mapAudioRangeToByte(audioBuffer)
+
+        const bufferLength = normalizedAudio.length
+
+        let AudioSums = [];
+        const treshold=50    ;
+
+        for (let index = 0; index < bufferLength - 10000; index++) {
+            //Amíg minden nulla
+            while ( normalizedAudio[index]<=treshold && index < bufferLength) { index++ }
+
+            let sum = 0.0;
+            while (index < bufferLength) {
+
+                if (normalizedAudio[index] > treshold) {
+                    sum += normalizedAudio[index];
+                }
+                let isEnd = true;
+                for (let i = index; i < index + 10000; i++) {
+                    const element = normalizedAudio[i];
+                    if (element > treshold) {
+                        isEnd = false;
+                        break;
+                    }
+                }
+                if (isEnd) {
+                    AudioSums.push(sum);
+                    break
+                } else {
+                    index++;
+                }
+
+            }
+
+        }
+        return AudioSums;
+
+    }
+
 
     // Az audió feldolgozása és tömbbe mentése
-    function processAudio(audioLink) {
-        fetch(audioLink)
+    async function processAudio(audioLink) {
+        await fetch(audioLink)
             .then(response => response.arrayBuffer())
             .then(buffer => {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            return audioContext.decodeAudioData(buffer);
-        })
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                return audioContext.decodeAudioData(buffer);
+            })
             .then(decodedData => {
-            const audioDuration = decodedData.duration;
-            const segmentDuration = audioDuration / 6; // Hat egyenlő részre osztjuk az audiót
+                const audioDuration = decodedData.duration;
+                const segmentDuration = audioDuration / 6; // Hat egyenlő részre osztjuk az audiót
 
-            const audioSegments = [];
-            for (let i = 0; i < 6; i++) {
-                const startTime = i * segmentDuration;
-                const endTime = startTime + segmentDuration-segmentDuration/10;
+                const audioSegments = [];
+                for (let i = 0; i < 6; i++) {
+                    const startTime = i * segmentDuration;
+                    const endTime = startTime + segmentDuration - segmentDuration / 10;
 
-                // A kívánt időintervallumra vonatkozóan lekérjük az audió adatokat
-                const audioSlice = getAudioSlice(decodedData, startTime, endTime);
-                audioSegments.push(audioSlice);
-            }
+                    // A kívánt időintervallumra vonatkozóan lekérjük az audió adatokat
+                    const audioSlice = getAudioSlice(decodedData, startTime, endTime);
+                    audioSegments.push(audioSlice);
+                }
+                console.log("TEST-start")
+                console.log(getAudioProcess(decodedData))
+                console.log("TEST-end")
 
-            // Itt használhatod a "audioSegments" tömböt a szükséges további műveletekkel
-            //console.log("Audio részek: ", audioSegments);
-            //const jsonArray = JSON.stringify(Array.from(audioSegments));
 
-            //console.log(jsonArray);
-            const ChaptchaInput = document.getElementById('cap');
-            var solution ="";
-            for (let i = 0; i < audioSegments.length; i++) {
-                const sum =sumFloat32Array(audioSegments[i])
-                console.log(sum);
-                solution+=getClosest(sum);
-                ChaptchaInput.value = solution;
-            }
+                // Itt használhatod a "audioSegments" tömböt a szükséges további műveletekkel
+                //console.log("Audio részek: ", audioSegments);
+                //const jsonArray = JSON.stringify(Array.from(audioSegments));
 
-        })
+                //console.log(jsonArray);
+                const ChaptchaInput = document.getElementById('cap');
+                var solution = "";
+                for (let i = 0; i < audioSegments.length; i++) {
+                    const sum = sumFloat32Array(audioSegments[i])
+                    console.log(sum);
+                    solution += getClosest(sum);
+                    ChaptchaInput.value = solution;
+                }
+
+            })
             .catch(error => {
-            console.error("Hiba történt az audió feldolgozása során:", error);
-        });
+                console.error("Hiba történt az audió feldolgozása során:", error);
+            });
+    }
+
+    async function SolveChapcha() {
+        const audioLink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
+        await processAudio(audioLink);
+    }
+
+
+    //Ha valami változás történik az oldalon
+    function onAlertChange() {
+
+        const popup = document.getElementById("validlogin_popupTable")
+        if (!popup) { return; }
+
+        const messageBox = popup.getElementsByClassName("ajax__validatorcallout_error_message_cell")[0];
+        if (messageBox && messageBox.innerText === "Nem vagy hibásan töltötte ki a captcha-t") {
+            //console.log("Lefut!")
+            document.getElementsByClassName("captchaRefreshIcon")[0].click();
+            setTimeout(
+                async () => {
+                    try {
+                        await SolveChapcha();
+                        messageBox.innerText = "Javítva! (CSN script)";
+                    }
+                    catch (e) {
+                        messageBox.innerText = "Valami nem jó, próbád manuálisan! (CSN script)";
+                    }
+
+                }, 100);
+        }
     }
 
     // Hívjuk meg a függvényt, amikor az oldal betöltődött
     window.addEventListener('load', async () => {
 
-        //setTimeout(myScript, 300);
-        const audioLink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
-        processAudio(audioLink);
-    },false);
+        //Megoldja ha
+        SolveChapcha()
+
+        //Ez a rész azért felel hogy ha hibázna vagy lejárna a hapcha akkor javítsa
+        return;// kikaocsolva
+        let observer;
+        if (observer) {
+            observer.disconnect()
+        }
+        const config = { attributes: false, childList: true, subtree: true };
+        observer = new MutationObserver(onAlertChange);
+        observer.observe(document.getElementById("captchaRow"), config);
+
+    }, false);
 })();
