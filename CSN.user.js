@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 // ==UserScript==
-// @name         Chaptca Solver for Neptun
+// @name         Captcha Solver for Neptun
 // @namespace    https://github.com/LetsUpdate/CSN
 // @version      0.1
 // @description  No chapcha 4 u

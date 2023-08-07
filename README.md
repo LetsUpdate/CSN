@@ -1,4 +1,4 @@
-# Chaptca Solver for Neptun
+# Captcha Solver for Neptun
 
 Egy js script a Neptun oktatási platform Captcha kihívásainak automatikus megoldására.
 
@@ -8,4 +8,4 @@ Telepítés lépései:
 
 
 Projekt leírás:
-A Chaptca Solver for Neptun célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. A script időt takarít meg és kényelmesebbé teszi a felhasználók számára a Captcha-k kezelését. 
+A Captcha Solver for Neptun célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. A script időt takarít meg és kényelmesebbé teszi a felhasználók számára a Captcha-k kezelését. 
