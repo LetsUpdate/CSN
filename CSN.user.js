@@ -163,6 +163,8 @@ SOFTWARE.*/
 
     //OnLoad...
     window.addEventListener('load', async () => {
+        const chapChaImage =document.getElementsByClassName("captchaImage")[0];
+        if(!chapChaImage){return}
         SolveChapcha()
 
         let observer;
@@ -171,7 +173,7 @@ SOFTWARE.*/
         }
         const config = { attributes: true, childList: false, subtree: false };
         observer = new MutationObserver(onChapPicChanged);
-        observer.observe(document.getElementsByClassName("captchaImage")[0], config);
+        observer.observe(chapChaImage, config);
 
     }, false);
 })();
