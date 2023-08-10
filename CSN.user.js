@@ -46,29 +46,39 @@ SOFTWARE.*/
 (function () {
     'use strict';
 
+    const CALIBRATION_REQUIRED_ERROR = "CALIBRATION_REQUIRED"
+    const AUDIO_LINK_NOT_FOUND_ERROR = "UDIO_LINK_NOT_FOUND"
+    let CALIBRATOR = 1.0;
+    const BASE_NUMBERPRINTS = [260587, 137703, 144640, 74290, 107363, 99141, 35806, 64888, 268335, 123680];
+
     //Kezelehtővé teszi a hangot
     function NormalizeAudio(audioBuffer) {
         const channelData = audioBuffer.getChannelData(0);
         const bufferLength = channelData.length;
-        const minAmplitude = 0
-        const maxAmplitude = 0.5
-      
+        const minAmplitude = 0;
+        const maxAmplitude = 0.5;
+
         // Map the audio data to the range 0 to 255 (byte range)
         const amplitudeRange = maxAmplitude - minAmplitude;
-        let normalizedAudio=[];
+        let normalizedAudio = [];
         for (let i = 0; i < bufferLength; i++) {
-          const scaledAmplitude = (Math.abs(channelData[i]) - minAmplitude) / amplitudeRange;
-          normalizedAudio.push(Math.round(scaledAmplitude * 255));
+            const scaledAmplitude = (Math.abs(channelData[i]) - minAmplitude) / amplitudeRange;
+            normalizedAudio.push(Math.round(scaledAmplitude * 255));
         }
         return normalizedAudio;
-      }
+    }
 
     //Ha valamiért nem lenne pontos az olvasás
     function getClosest(count) {
         //                           0                   1                   2               3                   4                   5                    6                  7               8                       9
         //const oldnumbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
-        const numbers = [260587,137703,144640,74290,107363,99141,35806,64888,268335,123680];
-        
+        let numbers = BASE_NUMBERPRINTS;
+
+        //CalibratorModifier
+        numbers = numbers.map((number, index) => Math.round(number * CALIBRATOR));
+
+        const sensitivity = 20;
+
         let closestIndex = 0;
         let closest = Math.abs(numbers[0] - count);
 
@@ -80,10 +90,11 @@ SOFTWARE.*/
                 closestIndex = index;
             }
         }
+        if (Math.abs(numbers[closestIndex] - count) > sensitivity) throw CALIBRATION_REQUIRED_ERROR;
         return closestIndex
     }
-    
-    // "Lenyomatokat" csinál a hangokból és tömb kénmt vissza adja azokat
+
+    // "Lenyomatokat" csinál a hangokból és tömb ként vissza adja azokat
     function AudioProcessor(audioBuffer) {
 
         const normalizedAudio = NormalizeAudio(audioBuffer)
@@ -91,11 +102,12 @@ SOFTWARE.*/
         const bufferLength = normalizedAudio.length
 
         let AudioSums = [];
-        const treshold=50    ;
+        const treshold = 50;
+        const sensitivity = 10000;
 
-        for (let index = 0; index < bufferLength - 10000; index++) {
+        for (let index = 0; index < bufferLength - sensitivity; index++) {
             //Amíg minden nulla
-            while ( normalizedAudio[index]<=treshold && index < bufferLength) { index++ }
+            while (normalizedAudio[index] <= treshold && index < bufferLength) { index++ }
 
             let sum = 0.0;
             while (index < bufferLength) {
@@ -104,7 +116,7 @@ SOFTWARE.*/
                     sum += normalizedAudio[index];
                 }
                 let isEnd = true;
-                for (let i = index; i < index + 10000; i++) {
+                for (let i = index; i < index + sensitivity; i++) {
                     const element = normalizedAudio[i];
                     if (element > treshold) {
                         isEnd = false;
@@ -112,6 +124,9 @@ SOFTWARE.*/
                     }
                 }
                 if (isEnd) {
+                    //decalibrator
+                    //sum*=2
+
                     AudioSums.push(sum);
                     break
                 } else {
@@ -125,54 +140,159 @@ SOFTWARE.*/
 
     }
 
-
-    // Az audió feldolgozása és tömbbe mentése
-    async function _SolveChapcha(audioLink) {
-        await fetch(audioLink)
+    async function audioToNumbers(audioLink) {
+        return await fetch(audioLink)
             .then(response => response.arrayBuffer())
             .then(buffer => {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 return audioContext.decodeAudioData(buffer);
             })
             .then(decodedData => {
-
-                const ChaptchaInput = document.getElementById('cap');
-                var solution = "";
-                AudioProcessor(decodedData).forEach(element => {
-                    console.log(element);
-                    solution += getClosest(element);
-                });
-                ChaptchaInput.value = solution;
-
+                return AudioProcessor(decodedData);
             })
             .catch(error => {
                 console.error("Hiba történt az audió feldolgozása során:", error);
             });
     }
 
+
+    // Az audió feldolgozása és tömbbe mentése
+    async function _SolveChapcha(audioLink) {
+        const audioNumbers = await audioToNumbers(audioLink);
+        try {
+            const ChaptchaInput = document.getElementById('cap');
+            var solution = "";
+            audioNumbers.forEach(element => {
+                console.log(element);
+                solution += getClosest(element);
+            });
+            ChaptchaInput.value = solution;
+        } catch (error) {
+            if (error == CALIBRATION_REQUIRED_ERROR) {
+                CalibrationNeeded();
+            } else {
+                console.error(error);
+            }
+        }
+
+    }
+    function GetAudioLink() {
+        const audiolink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
+        if (audiolink) {
+            return audiolink;
+        }
+        throw AUDIO_LINK_NOT_FOUND_ERROR;
+    }
+
     async function SolveChapcha() {
-        const audioLink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
+        const audioLink = GetAudioLink();
         await _SolveChapcha(audioLink);
     }
 
 
-    //Ha frissül a Captcha kép...
-    function onChapPicChanged() {
-        setTimeout(SolveChapcha,300);
+
+    function CalibrationNeeded() {
+        //Alert the user that interaction needed for the scrip
+        console.log(CALIBRATION_REQUIRED_ERROR);
+
+        if (document.getElementById("CalibrateButton")) return;
+
+        //Show calibrator button
+        const ChaptchaRow = document.getElementById("captchaRow");
+        if (!ChaptchaRow) { return };
+
+        let CalibrateButton = document.createElement("BUTTON");
+        CalibrateButton.id = "CalibrateButton";
+        CalibrateButton.innerHTML = "Calibrate"
+        CalibrateButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            await Calibrate();
+        });
+
+        const td = document.createElement('td');
+        ChaptchaRow.append(td)
+        td.append(CalibrateButton);
+
+
+    }
+
+    async function Calibrate() {
+        /*
+        Szükség van:
+        Beírt számokra
+        Kiszámolt számokra
+
+        */
+
+        const ChaptchaInput = document.getElementById('cap');
+        const rawinput = ChaptchaInput.value;
+        if (rawinput.length != 6) {
+            alert("Írd be a Captcha-t pontosan!");
+            return;
+        }
+        const inputNumbers = rawinput.split('').map((char, index) => parseInt(char));
+        const generateNumbers = await audioToNumbers(GetAudioLink());
+        let isSuccess = true;
+        if (inputNumbers) {
+
+            for (let index = 0; index < 6; index++) {
+                const generated = generateNumbers[index];
+                const input = inputNumbers[index];
+
+                const expected = BASE_NUMBERPRINTS[input];
+
+                CALIBRATOR = generated / expected;
+
+                //Test Calibration
+                isSuccess = true;
+                try {
+                    generateNumbers.forEach(gen => {
+                        getClosest(gen);
+                    });
+                } catch (error) {
+                    isSuccess = false;
+                    if (error == CALIBRATION_REQUIRED_ERROR) {
+                        console.log("Calibration: failed attempt: " + index);
+                    }
+                    console.log(error);
+                }
+
+                if (isSuccess) {
+
+                    break;
+                }
+
+            }
+
+        } else {
+            alert("Valami nem jó");
+        }
+        if (isSuccess) {
+            alert("A kalibráció sikeres")
+        } else {
+            alert("A kalibráció sikertelen")
+        }
+        return isSuccess;
+
+
     }
 
     //OnLoad...
     window.addEventListener('load', async () => {
-        const chapChaImage =document.getElementsByClassName("captchaImage")[0];
-        if(!chapChaImage){return}
+        const chapChaImage = document.getElementsByClassName("captchaImage")[0];
+        if (!chapChaImage) { return }
+
+        if (!document.getElementsByClassName("captchaPlayIcon")[0]) { return; }
+
         SolveChapcha()
 
+        //
         let observer;
         if (observer) {
             observer.disconnect()
         }
         const config = { attributes: true, childList: false, subtree: false };
-        observer = new MutationObserver(onChapPicChanged);
+        observer = new MutationObserver(() => { setTimeout(SolveChapcha, 300); });
         observer.observe(chapChaImage, config);
 
     }, false);
