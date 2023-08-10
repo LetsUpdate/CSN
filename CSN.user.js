@@ -38,7 +38,7 @@ SOFTWARE.*/
 // @grant          GM_getValue
 
 
-// @updateURL    https://github.com/LetsUpdate/CSN/releases/download/release/CSN.user.js
+// @updateURL    https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js
 // @supportURL   https://github.com/LetsUpdate/CSN
 // @contributionURL https://github.com/LetsUpdate/CSN
 
