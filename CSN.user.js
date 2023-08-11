@@ -161,6 +161,10 @@ SOFTWARE.*/
     // Az audió feldolgozása és tömbbe mentése
     async function _SolveChapcha(audioLink) {
         const audioNumbers = await audioToNumbers(audioLink);
+        const button = document.getElementById(CSN_LOGO+"BUTTON");
+        if(button){
+            button.click();
+        }
         try {
             const ChaptchaInput = document.getElementById('cap');
             var solution = "";
@@ -190,10 +194,7 @@ SOFTWARE.*/
 
         const audioLink = GetAudioLink();
         await _SolveChapcha(audioLink);
-        const button = document.getElementById(CSN_LOGO + "BUTTON");
-        if (button) {
-            button.click();
-        }
+
     }
 
 
