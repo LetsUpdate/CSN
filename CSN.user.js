@@ -23,7 +23,7 @@ SOFTWARE.*/
 // ==UserScript==
 // @name         Captcha Solver for Neptun
 // @namespace    https://github.com/LetsUpdate/CSN
-// @version      0.3.1
+// @version      0.3.2
 // @description  No Captcha 4 u
 // @author       RED
 // @license      MIT

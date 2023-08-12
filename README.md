@@ -1,7 +1,23 @@
 # Captcha Solver for Neptun
 
-A Captcha Solver for Neptun célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. A script időt takarít meg és kényelmesebbé teszi a felhasználók számára a Captcha-k kezelését. 
+A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. A szkript időt takarít meg és kényelmesebbé teszi a felhasználók számára a Captcha-k kezelését.
 
 Telepítési útmutató:
-1. Első lépésként telepítsd a böngésződbe a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt. amely lehetővé teszi a JavaScript alapú szkriptek futtatását a böngésződben.
-2. A szkript telepítéséhez [kattints ide](https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js). Ezután a szkript automatikusan bekerül a Tampermonkey kiegészítőbe, és elkezdheted használni a Captcha Solver funkciót a Neptun platformon.
+1. Első lépésként telepítsd a böngésződbe a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt, amely lehetővé teszi a JavaScript alapú szkriptek futtatását a böngésződben.
+2. A szkript telepítéséhez [kattints ide](https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js). Ezután a szkript automatikusan bekerül a Tampermonkey kiegészítőbe, és már el is kezdheted használni!
+
+*tipp: Ha [PowerUp](https://github.com/solymosi/npu)-al együtt használod, automatikusan be is tudsz lépni, mint régen!*
+
+## Kalibráció
+Lehet, hogy látni fogsz egy kalibráló gombot. Ez azt jelenti, hogy a szkript valami miatt nem képes megbízhatóan felismerni a számokat.
+1. Egyszerűen csak írd be a captcha-t **helyesen**.
+2. Majd nyomj a kalibrálás gombra.
+
+Elvileg kész is vagy! Többet nem kell foglalkoznod a Captcha-val.
+
+Ha mégsem sikerülne, frissítsd az oldalt és próbáld újra. De ha minden kötél szakad, jelezd a [*Issues*](https://github.com/LetsUpdate/CSN/issues) fülön!
+
+##
+*Ha nagyon tetszett, akár [meghívhatsz egy kávéra](https://ko-fi.com/red_official)*
+
+koszi :P
