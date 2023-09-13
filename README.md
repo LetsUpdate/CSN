@@ -2,7 +2,7 @@
 
 A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon.
 
-*Dobj egy csillagot hogy tudjak vele menőzni!*
+*Dobj egy csillagot hogy tudjak vele menőzni!* [⭐KaptamEgyCsillagot!!!⭐](https://coub.com/view/1uvg42)
 
 Telepítési útmutató:
 1. Első lépésként telepítsd a böngésződbe a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt, amely lehetővé teszi a JavaScript alapú szkriptek futtatását a böngésződben.
