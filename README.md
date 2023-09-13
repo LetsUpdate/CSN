@@ -1,6 +1,7 @@
 # Captcha Solver for Neptun
 
-A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. A szkript időt takarít meg és kényelmesebbé teszi a felhasználók számára a Captcha-k kezelését.
+A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon.
+*Dobj egy csillagot hogy tudjak vele menőzni*
 
 Telepítési útmutató:
 1. Első lépésként telepítsd a böngésződbe a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt, amely lehetővé teszi a JavaScript alapú szkriptek futtatását a böngésződben.
