@@ -161,13 +161,13 @@ SOFTWARE.*/
     // Az audió feldolgozása és tömbbe mentése
     async function _SolveChapcha(audioLink) {
         const audioNumbers = await audioToNumbers(audioLink);
-        const button = document.getElementById(CSN_LOGO + "BUTTON");
+        const button = document.getElementById(CSN_LOGO+"BUTTON");
         const ChaptchaInput = document.getElementById('cap');
-        if (button) {
+        if(button){
             button.click();
         }
         try {
-            
+           
             var solution = "";
             console.log(audioNumbers);
             audioNumbers.forEach(element => {
@@ -177,38 +177,11 @@ SOFTWARE.*/
         } catch (error) {
             if (error == CALIBRATION_REQUIRED_ERROR) {
 
-
-                let succes =false;
-                let eredmeny;
-                BASE_NUMBERPRINTS.forEach(be => {
-                    CALIBRATOR = audioNumbers[0] / be;
-                    eredmeny = [];
-                   
-                    try {
-                        audioNumbers.forEach(element => {
-                            eredmeny.push(getClosest(element));
-
-                        });
-                        throw "CALIBRATION_SUCCESS"
-                    } catch (error) {
-                        if (error === CALIBRATION_REQUIRED_ERROR) {
-                            console.log("Calibration still required!");
-                        } else if (error === "CALIBRATION_SUCCESS") {
-                            succes = true;
-                            audioNumbers.forEach(element => {
-                                solution += getClosest(element);
-                            });
-                            ChaptchaInput.value = solution;
-                        } else {
-                            console.log(error);
-                        }
-                    }
-
-
-                });
-
-
-                if(!succes){
+                let result = AutomaticCalibration(audioNumbers);
+                if(result)
+                {
+                    ChaptchaInput.value = result.join('');
+                }else{
                     CalibrationNeeded();
                 }
             } else {
@@ -217,6 +190,33 @@ SOFTWARE.*/
         }
 
     }
+
+    function AutomaticCalibration(gotNums) {
+
+        let eredmeny;
+         BASE_NUMBERPRINTS.forEach(be => {
+            CALIBRATOR = gotNums[0]/be;
+            eredmeny =[];
+            try {
+                gotNums.forEach(element => {
+                    eredmeny.push(getClosest(element));
+                    
+                });
+                
+            } catch (error) {
+                if (error === CALIBRATION_REQUIRED_ERROR) {
+                    console.log("Calibrating...");
+                }else{
+                    console.log(error);
+                }
+                eredmeny=false;
+            }
+            
+    
+        });
+        return eredmeny;
+    }
+
     function GetAudioLink() {
         const audiolink = document.getElementById('loginCaptcha').getElementsByClassName('captchaImage')[0].src.replace('Captcha.ashx', 'CaptchaAudio.ashx');
         if (audiolink) {
