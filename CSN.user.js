@@ -79,7 +79,7 @@ SOFTWARE.*/
         //CalibratorModifier
         numbers = numbers.map((number, index) => Math.round(number * CALIBRATOR));
 
-        const sensitivity = 8000;
+        const sensitivity = 2000;
 
         let closestIndex = 0;
         let closest = Math.abs(numbers[0] - count);
@@ -181,6 +181,7 @@ SOFTWARE.*/
                 if(result)
                 {
                     ChaptchaInput.value = result.join('');
+                    GM.setValue(CALIBRATOR_VALUE_KEY, CALIBRATOR);
                 }else{
                     CalibrationNeeded();
                 }
@@ -192,29 +193,25 @@ SOFTWARE.*/
     }
 
     function AutomaticCalibration(gotNums) {
-
         let eredmeny;
-         BASE_NUMBERPRINTS.forEach(be => {
-            CALIBRATOR = gotNums[0]/be;
-            eredmeny =[];
+        for (let be of BASE_NUMBERPRINTS) {
+            CALIBRATOR = gotNums[0] / be;
+            eredmeny = [];
             try {
-                gotNums.forEach(element => {
+                for (let element of gotNums) {
                     eredmeny.push(getClosest(element));
-                    
-                });
-                
+                }
+                console.log(eredmeny);
+               return eredmeny;
             } catch (error) {
                 if (error === CALIBRATION_REQUIRED_ERROR) {
                     console.log("Calibrating...");
-                }else{
+                } else {
                     console.log(error);
                 }
-                eredmeny=false;
             }
-            
-    
-        });
-        return eredmeny;
+        }
+        return false;
     }
 
     function GetAudioLink() {
