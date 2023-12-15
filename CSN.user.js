@@ -161,21 +161,56 @@ SOFTWARE.*/
     // Az audió feldolgozása és tömbbe mentése
     async function _SolveChapcha(audioLink) {
         const audioNumbers = await audioToNumbers(audioLink);
-        const button = document.getElementById(CSN_LOGO+"BUTTON");
-        if(button){
+        const button = document.getElementById(CSN_LOGO + "BUTTON");
+        const ChaptchaInput = document.getElementById('cap');
+        if (button) {
             button.click();
         }
         try {
-            const ChaptchaInput = document.getElementById('cap');
+            
             var solution = "";
+            console.log(audioNumbers);
             audioNumbers.forEach(element => {
-                console.log(element);
                 solution += getClosest(element);
             });
             ChaptchaInput.value = solution;
         } catch (error) {
             if (error == CALIBRATION_REQUIRED_ERROR) {
-                CalibrationNeeded();
+
+
+                let succes =false;
+                let eredmeny;
+                BASE_NUMBERPRINTS.forEach(be => {
+                    CALIBRATOR = audioNumbers[0] / be;
+                    eredmeny = [];
+                   
+                    try {
+                        audioNumbers.forEach(element => {
+                            eredmeny.push(getClosest(element));
+
+                        });
+                        throw "CALIBRATION_SUCCESS"
+                    } catch (error) {
+                        if (error === CALIBRATION_REQUIRED_ERROR) {
+                            console.log("Calibration still required!");
+                        } else if (error === "CALIBRATION_SUCCESS") {
+                            succes = true;
+                            audioNumbers.forEach(element => {
+                                solution += getClosest(element);
+                            });
+                            ChaptchaInput.value = solution;
+                        } else {
+                            console.log(error);
+                        }
+                    }
+
+
+                });
+
+
+                if(!succes){
+                    CalibrationNeeded();
+                }
             } else {
                 console.error(error);
             }
