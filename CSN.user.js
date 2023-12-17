@@ -23,7 +23,7 @@ SOFTWARE.*/
 // ==UserScript==
 // @name         Captcha Solver for Neptun
 // @namespace    https://github.com/LetsUpdate/CSN
-// @version      0.3.2
+// @version      0.3.3
 // @description  No Captcha 4 u
 // @author       RED
 // @license      MIT
@@ -72,8 +72,7 @@ SOFTWARE.*/
 
     //Ha valamiért nem lenne pontos az olvasás
     function getClosest(count) {
-        //                           0                   1                   2               3                   4                   5                    6                  7               8                       9
-        //const oldnumbers = [295908.338132016, 144808.64692975077, 146017.76512430015, 200643.33916450525, 173056.1334383033, 116006.99633115364, 102563.54561544387, 132958.96139509347, 277033.17429445166, 209655.16578076393]
+
         let numbers = BASE_NUMBERPRINTS;
 
         //CalibratorModifier
@@ -365,7 +364,6 @@ SOFTWARE.*/
         CALIBRATOR = await GM.getValue(CALIBRATOR_VALUE_KEY, 1);
 
         SolveChapcha()
-
 
         const chapChaImage = document.getElementsByClassName("captchaImage")[0];
         if (!chapChaImage) { return }

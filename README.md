@@ -2,7 +2,8 @@
 
 A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon.
 
-*Dobj egy csillagot hogy tudjak vele menőzni!*
+
+*Dobj egy csillagot hogy tudjak vele menőzni!* [⭐KaptamEgyCsillagot!!!⭐](https://coub.com/view/1uvg42)
 
 Telepítési útmutató:
 1. Első lépésként telepítsd a böngésződbe a [Tampermonkey](https://www.tampermonkey.net/) kiegészítőt, amely lehetővé teszi a JavaScript alapú szkriptek futtatását a böngésződben.
@@ -10,7 +11,11 @@ Telepítési útmutató:
 
 *tipp: Ha [PowerUp](https://github.com/solymosi/npu)-al együtt használod, automatikusan be is tudsz lépni, mint régen!*
 
-## Kalibráció
+## Újdonság: Automatikus Kalibráció!
+
+Mostantól a **CSN** képes automatikusan kalibrálni magát!
+
+## Kalibráció - manuális
 Lehet, hogy látni fogsz egy kalibráló gombot. Ez azt jelenti, hogy a szkript valami miatt nem képes megbízhatóan felismerni a számokat.
 1. Egyszerűen csak írd be a captcha-t **helyesen**.
 2. Majd nyomj a kalibrálás gombra.
