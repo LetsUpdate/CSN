@@ -39,6 +39,7 @@ SOFTWARE.*/
 
 
 // @updateURL    https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js
+// @downloadURL  https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js
 // @supportURL   https://github.com/LetsUpdate/CSN
 // @contributionURL https://github.com/LetsUpdate/CSN
 
