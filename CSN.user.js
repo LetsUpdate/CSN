@@ -226,6 +226,11 @@ SOFTWARE.*/
 
         const audioLink = GetAudioLink();
         await _SolveChapcha(audioLink);
+        //Fast login ( suggested by: pavukclovek )
+        const loginButton = document.getElementById('btnSubmit');
+            if (loginButton) {
+                loginButton.click();
+            }
 
     }
 
