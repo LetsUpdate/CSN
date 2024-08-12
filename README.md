@@ -29,6 +29,6 @@ Ha mégsem sikerülne, frissítsd az oldalt és próbáld újra. De ha minden k�
 ##
 *Ha nagyon tetszett, akár [meghívhatsz egy kávéra](https://ko-fi.com/red_official)*
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q0O1LDA) (Supporterek kapnak early acces-t az új scriptre (már működik a CSN2))!
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q0O1LDA) (Supporterek kapnak early access-t az új scriptre (már működik a CSN2))!
 
 koszi :P
