@@ -1,6 +1,8 @@
 # Captcha Solver for Neptun
 
-A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon.
+
+
+A **CSN** célja a Captcha kihívások megoldásának automatizálása a Neptun platformon. 
 
 
 *Dobj egy csillagot hogy tudjak vele menőzni!* [⭐KaptamEgyCsillagot!!!⭐](https://coub.com/view/1uvg42)
@@ -26,5 +28,7 @@ Ha mégsem sikerülne, frissítsd az oldalt és próbáld újra. De ha minden k�
 
 ##
 *Ha nagyon tetszett, akár [meghívhatsz egy kávéra](https://ko-fi.com/red_official)*
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q0O1LDA) (Supporterek kapnak early acces-t az új scriptre (már működik a CSN2))!
 
 koszi :P
