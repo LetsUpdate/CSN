@@ -80,7 +80,7 @@ async function StartSolving() {
     const loginButton = getNewLoginButton();
     const captchaInput = getCaptchaInput()
     const captchaRefreshIcon = getCaptchaRefreshIcon();
-    for (let i = 0;i<5;i++) {
+    for (let i = 0;i<7;i++) {
         try {
             console.log('Solving captcha...');
             const captchaSolution = await solveCaptcha(captchaImage[0]);
@@ -155,10 +155,9 @@ function waitForDialog() {
 }
 
 function LookForCaptcha() {
-    getFirstLogin().on('click', function() {
-        console.log('First login button clicked');
+
         waitForDialog();
-    });
+
     console.log('Observing document body for changes...');
 }
 
