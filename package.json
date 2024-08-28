@@ -4,13 +4,15 @@
   "description": "Captcha Solver For Neptun",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
-    "serve": "NODE_ENV=development webpack serve --mode development"
+    "build:prod": "webpack",
+    "build:dev": "cross-env NODE_ENV=development webpack",
+    "watch": "cross-env NODE_ENV=development webpack --watch",
+    "serve": "cross-env NODE_ENV=development webpack serve --mode development"
   },
   "author": "RED",
   "license": "MIT",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
     "npm-run-all": "^4.1.5",

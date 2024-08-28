@@ -2,7 +2,7 @@ const path = require('path');
 const { UserscriptPlugin } = require('webpack-userscript');
 
 
-const dev = false;
+const dev = process.env.NODE_ENV === 'development';
 
 module.exports = {
     mode: dev ? 'development' : 'production',
@@ -21,7 +21,7 @@ module.exports = {
 
     },
     optimization: {
-        minimize: true,
+        minimize: dev ? false : true,
       },
     plugins: [
         new UserscriptPlugin({
