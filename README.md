@@ -17,7 +17,8 @@ Telepítési útmutató:
 
 **Figyelem:** A script csak a captcha-t küldi el és a szerver is csak azt képes elfogadni. Ha nem hiszed, nézd meg a kódot!
 
-*tipp: Ha [PowerUp](https://github.com/solymosi/npu)-al együtt használod, automatikusan be is tudsz lépni, mint régen!*
+*tipp: Ha nem működne a PowerUp [@boglarka](https://github.com/boglarkla) írt rá egy fixet: [boglarka/npufix](https://github.com/boglarkla/npu/)*
+
 
 
 ##
