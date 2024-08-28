@@ -2,14 +2,14 @@ const path = require('path');
 const { UserscriptPlugin } = require('webpack-userscript');
 
 
-const dev = process.env.NODE_ENV !== 'production';
+const dev = false;
 
 module.exports = {
     mode: dev ? 'development' : 'production',
     entry: path.resolve(__dirname, 'src', 'index.js'), // Your entry point
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'main.user.js', // Output file
+        filename: 'CSN.user.js', // Output file
     },
     devServer: {
         static: {
@@ -21,7 +21,7 @@ module.exports = {
 
     },
     optimization: {
-        minimize: false,
+        minimize: true,
       },
     plugins: [
         new UserscriptPlugin({
@@ -41,7 +41,12 @@ module.exports = {
                                 ],
                                 grant: 'GM_xmlhttpRequest',
                                 "run-at": "document-end",
-                                require: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+                                require: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js",
+                                updateURL: "https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.meta.js",
+                                downloadURL:"https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js",
+                                supportURL:"https://github.com/LetsUpdate/CSN",
+                                icon64: "https://raw.githubusercontent.com/LetsUpdate/CSN/main/.github/icon.png"
+
                             };
                         
                             if (dev) {
