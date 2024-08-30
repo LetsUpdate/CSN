@@ -31,29 +31,6 @@ function getErrorLabel() {
     return $("#txtCaptchaLogin-error");
 }
 
-function waitForCaptchaRefresh(imageElement,src, interval = 100, timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        const oldSrc = src;
-        const startTime = Date.now();
-
-        const checkCaptcha = () => {
-            const currentTime = Date.now();
-            if (currentTime - startTime > timeout) {
-                reject(new Error('Captcha refresh timeout'));
-                return;
-            }
-
-            if (imageElement.src !== oldSrc) {
-                resolve();
-            } else {
-                setTimeout(checkCaptcha, interval);
-            }
-        };
-
-        checkCaptcha();
-    });
-}
-
 function scanForElementText(element, timeout = 10000) {
     return new Promise((resolve, reject) => {
         const intervalTime = 100; // Interval time in milliseconds
@@ -74,20 +51,28 @@ function scanForElementText(element, timeout = 10000) {
         }, intervalTime);
     });
 }
-
+let tryes =0;
 async function StartSolving() {
+    if(tryes>4)
+        return;
+    tryes++;
+
+
     const captchaImage = getCaptchaImage();
     const loginButton = getNewLoginButton();
     const captchaInput = getCaptchaInput()
     const captchaRefreshIcon = getCaptchaRefreshIcon();
-    for (let i = 0;i<7;i++) {
+
         try {
             console.log('Solving captcha...');
             const captchaSolution = await solveCaptcha(captchaImage[0]);
             
             
             captchaInput.val(captchaSolution);
+
+  
             loginButton.click();
+        
 
             //Mutotion observer observe the error label
             //if the captcha is invalid the error label will not be empty
@@ -100,14 +85,7 @@ async function StartSolving() {
                 console.log('Captcha is invalid, solving again...');
                 getErrorLabel().text("");  
                 console.log('waitforCaptchaRefresh');
-                src = captchaImage[0].src;
                 captchaRefreshIcon.click();
-                // wait for the captcha to refresh
-                // if the old image is not the same as the new one
-                // then we can continue
-                await waitForCaptchaRefresh(captchaImage[0],src);
-                console.log('Captcha refreshed');
-                continue;
             }
             catch (error) {
                 if(error === "TIME_OUT") {
@@ -117,8 +95,6 @@ async function StartSolving() {
                     console.error('Failed to solve captcha:', error);
                     return;
                 }
-                
-                return;
             }
 
         }
@@ -126,37 +102,62 @@ async function StartSolving() {
 
             if(error === "HARD_IMAGE") {
                 captchaRefreshIcon.click();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }else if (error === "BASE64_CONVERSION_FAILED") {
-                //wait a bit and try again
-                await new Promise(resolve => setTimeout(resolve, 1000));
+             
             }else {
             
             console.error('Failed to solve captcha:', error);
             return;
             } 
         }
-    }
-
-
 }
 
 
-function waitForDialog() {
-    const targetSelector = 'body > div.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-front.ui-dialog-buttons.ui-draggable';
-    const interval = setInterval(() => {
-        const targetNode = document.querySelector(targetSelector);
-        if (targetNode && window.getComputedStyle(targetNode).display === 'block') {
-            console.log('Dialog is shown!');
-            StartSolving();
-            clearInterval(interval); // Stop checking after the element is shown
-        }
-    }, 100); // Check every 100 milliseconds
+
+
+function handleImageLoad() {
+    console.log('Image loaded:', getCaptchaImage()[0].src);
+    StartSolving();
 }
+
 
 function LookForCaptcha() {
 
-        waitForDialog();
+    const $imgElement = getCaptchaImage();
+    const imgElement = $imgElement[0];
+
+// Check if the element exists
+if (imgElement) {
+    // Create a new MutationObserver
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                console.log('Image src changed to:', imgElement.src);
+                
+
+                // Attach a load event listener to ensure the image is loaded
+                $imgElement.off('load').on('load', function() {
+                    if (this.complete && this.naturalWidth > 0) {
+                        handleImageLoad();
+                    }
+                });
+
+                // Also handle the case where the image might already be cached
+                if (imgElement.complete && imgElement.naturalWidth > 0) {
+                    console.log('Image loaded from cache:', imgElement.src);
+                    handleImageLoad();
+                }
+
+            }
+        });
+    });
+
+    // Start observing the image element for changes in its attributes
+    observer.observe(imgElement, {
+        attributes: true // Listen for attribute changes
+    });
+} else {
+    console.error('Image element not found');
+}
 
     console.log('Observing document body for changes...');
 }
