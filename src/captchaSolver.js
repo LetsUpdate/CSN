@@ -52,7 +52,7 @@ function scanForElementText(element, timeout = 10000) {
     });
 }
 let tryes =0;
-async function StartSolving() {
+async function StartSolving(imgsrc) {
     if(tryes>4)
         return;
     tryes++;
@@ -65,13 +65,26 @@ async function StartSolving() {
 
         try {
             console.log('Solving captcha...');
-            const captchaSolution = await solveCaptcha(captchaImage[0]);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            let captchaSolution;
+            if(imgsrc === captchaImage[0].src){
+            captchaSolution= await solveCaptcha(captchaImage[0]);
+         }
             
             
             captchaInput.val(captchaSolution);
 
-  
+            if(imgsrc === captchaImage[0].src) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
             loginButton.click();
+            console.log('Captcha solved:', captchaSolution);
+            }else {
+                console.log('Captcha image changed, solving again...');
+                return;
+            }
+
+            // Ne spammeljük a szervert szét
+            await new Promise((resolve) => setTimeout(resolve, 500));
         
 
             //Mutotion observer observe the error label
@@ -82,7 +95,7 @@ async function StartSolving() {
             console.log('Waiting for error label...');
             try {
                 await scanForElementText(getErrorLabel());
-                console.log('Captcha is invalid, solving again...');
+                console.log('Captcha is invalid:', getErrorLabel().text());
                 getErrorLabel().text("");  
                 console.log('waitforCaptchaRefresh');
                 captchaRefreshIcon.click();
@@ -116,7 +129,7 @@ async function StartSolving() {
 
 function handleImageLoad() {
     console.log('Image loaded:', getCaptchaImage()[0].src);
-    StartSolving();
+    StartSolving(getCaptchaImage()[0].src);
 }
 
 
