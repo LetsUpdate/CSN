@@ -1,6 +1,6 @@
 {
   "name": "csn2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Captcha Solver For Neptun",
   "main": "src/index.js",
   "scripts": {
