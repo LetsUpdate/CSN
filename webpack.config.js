@@ -1,5 +1,6 @@
 const path = require('path');
 const { UserscriptPlugin } = require('webpack-userscript');
+const TerserPlugin = require('terser-webpack-plugin');
 
 
 const dev = process.env.NODE_ENV === 'development';
@@ -22,6 +23,15 @@ module.exports = {
     },
     optimization: {
         minimize: dev ? false : true,
+        minimizer: [
+            new TerserPlugin({
+              terserOptions: {
+                compress: {
+                  drop_console: dev ? false : true,
+                },
+              },
+            }),
+          ],
       },
     plugins: [
         new UserscriptPlugin({
