@@ -86,15 +86,15 @@ async function StartSolving() {
                 getErrorLabel().text("");  
                 console.log('waitforCaptchaRefresh');
                 captchaRefreshIcon.click();
+                return;
             }
             catch (error) {
                 if(error === "TIME_OUT") {
                     console.log('TimedOut');
-                    return;
                 }else {
                     console.error('Failed to solve captcha:', error);
-                    return;
                 }
+                return;
             }
 
         }
@@ -142,10 +142,10 @@ if (imgElement) {
                 });
 
                 // Also handle the case where the image might already be cached
-                if (imgElement.complete && imgElement.naturalWidth > 0) {
-                    console.log('Image loaded from cache:', imgElement.src);
-                    handleImageLoad();
-                }
+                // if (imgElement.complete && imgElement.naturalWidth > 0) {
+                //     console.log('Image loaded from cache:', imgElement.src);
+                //     handleImageLoad();
+                // }
 
             }
         });
