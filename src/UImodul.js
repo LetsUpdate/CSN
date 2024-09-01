@@ -64,12 +64,12 @@ function SetState(state){
             logo.attr('src', icons.scriptError)
             logo.css('animation', 'none')
             //add hint
-            logo.attr('title', 'Ismeretlen hiba megoldás közben')
+            logo.attr('title', 'Ismeretlen hiba a captcha megoldása közben')
             break;
         case LogoState.networkError:
             logo.attr('src', icons.networkError)
             logo.css('animation', 'none')
-            logo.attr('title', 'CSN Szerver Hiba / offline')
+            logo.attr('title', 'CSN Szerver Hiba / unreachable')
             break;
     }
 }

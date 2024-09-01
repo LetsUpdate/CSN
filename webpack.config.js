@@ -37,10 +37,9 @@ module.exports = {
         new UserscriptPlugin({
                         headers(original) {
                             const baseHeaders = {
-                                name: 'CSN2',
-                                namespace: 'http://tampermonkey.net/',
-                                version: '1.0.0',
-                                description: 'A Tampermonkey script bundled with Webpack',
+                                name: 'Captcha Solver For Neptun',
+                                namespace: 'https://github.com/LetsUpdate/CSN',
+                                description: 'No captcha 4 u',
                                 author: 'RED',
                                 include: [
                                     'https://*neptun*/*hallgato*/*',
@@ -55,21 +54,22 @@ module.exports = {
                                 updateURL: "https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.meta.js",
                                 downloadURL:"https://github.com/LetsUpdate/CSN/releases/latest/download/CSN.user.js",
                                 supportURL:"https://github.com/LetsUpdate/CSN",
-                                icon64: "https://raw.githubusercontent.com/LetsUpdate/CSN/main/.github/icon.png"
+                                icon64: "https://raw.githubusercontent.com/LetsUpdate/CSN/main/.github/icon.png",
+                                license: "MIT",
 
                             };
                         
                             if (dev) {
                                 return {
-                                    ...baseHeaders,
                                     ...original,
+                                    ...baseHeaders,
                                     version: `${original.version}-build.[buildNo]`,
                                 };
                             }
                         
                             return {
-                                ...baseHeaders,
                                 ...original,
+                                ...baseHeaders,
                             };
                         },
 
