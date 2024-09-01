@@ -1,4 +1,4 @@
-const {solveCaptcha, convertImageToBase64} = require('./captchaSolverApi');
+const {solveCaptcha} = require('./captchaSolverApi');
 const {SetState, LogoState} = require('./UImodul');
 
 const $ = window.jQuery; 

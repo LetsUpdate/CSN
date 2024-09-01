@@ -28,6 +28,11 @@ document.getElementsByTagName('head')[0].appendChild(style);
             <img src="${icons.logo}" alt="logo" style="width: 25px; height: 25px; float: left; margin-left: 10px;">
          </div>`
     )
+    //onclick event open https://github.com/LetsUpdate/CSN
+    $(`#${id}`).click(() => {
+        window.open('https://github.com/LetsUpdate/CSN', '_blank');
+    });
+    
 }
 
 const LogoState = {
@@ -46,6 +51,7 @@ function SetState(state){
             break;
         case LogoState.solving:
             logo.attr('src', icons.logo)
+            logo.attr('title', 'Megoldás folyamatban...')
             //rotate the logo
             logo.css({
                 'animation': 'spin 0.8s linear infinite',
