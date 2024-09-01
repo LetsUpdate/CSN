@@ -1,4 +1,5 @@
 const {solveCaptcha, convertImageToBase64} = require('./captchaSolverApi');
+const {SetState, LogoState} = require('./UImodul');
 
 const $ = window.jQuery; 
 
@@ -53,8 +54,12 @@ function scanForElementText(element, timeout = 10000) {
 }
 let tryes =0;
 async function StartSolving(imgsrc) {
-    if(tryes>4)
+   
+    if(tryes>4){
+        SetState(LogoState.error);
         return;
+    }
+    SetState(LogoState.solving);
     tryes++;
 
 
@@ -119,6 +124,7 @@ async function StartSolving(imgsrc) {
             }else {
             
             console.error('Failed to solve captcha:', error);
+            SetState(LogoState.networkError);
             return;
             } 
         }
