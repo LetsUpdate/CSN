@@ -139,10 +139,16 @@ function handleImageLoad() {
 }
 
 
+
 function LookForCaptcha() {
 
     const $imgElement = getCaptchaImage();
     const imgElement = $imgElement[0];
+
+    //onbutton click reset tryes
+    getFirstLogin().click(function() {
+        tryes=0;
+    });
 
 // Check if the element exists
 if (imgElement) {
@@ -165,6 +171,10 @@ if (imgElement) {
                 //     console.log('Image loaded from cache:', imgElement.src);
                 //     handleImageLoad();
                 // }
+                const $abortLoginLink = $('#abortLogin > a');
+                if ($abortLoginLink.length) {
+                    $abortLoginLink.click();
+                }
 
             }
         });
